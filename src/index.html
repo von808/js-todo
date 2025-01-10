@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>js-todo</title>
+    <link rel="stylesheet" href="styles/output.css" />
+  </head>
+  <body>
+    <div
+      class="flex h-full min-h-screen w-screen items-center justify-center overflow-y-auto bg-[#232428]"
+    >
+      <div class="mx-auto flex w-1/2 flex-col gap-4 p-5 lg:w-9/12 xs:w-full">
+        <h1 class="text-6xl font-semibold">Todo</h1>
+        <input
+          type="text"
+          class="todo-input h-14 w-full rounded-lg border-4 border-transparent p-5 text-2xl text-black focus:border-blue-500 focus:outline-none"
+        />
+        <button
+          class="calculate-this h-14 w-full rounded-lg border-2 border-blue-500 text-2xl text-blue-500"
+          id="add-btn"
+        >
+          Добавить
+        </button>
+        <div
+          class="flex flex-col items-center justify-center gap-5 p-5 text-black"
+        >
+          <ul class="flex w-full flex-col items-start gap-2" id="list">
+            <!-- <div
+              class="todo-item todo-item-- flex min-h-[52px] w-full items-center justify-between gap-4 rounded-md bg-white px-2 py-2 pl-4"
+            >
+              <h3 class="text-2xl font-semibold">Название</h3>
+              <div class="flex h-full gap-1 text-xl text-white">
+                <button
+                  class="btn-success flex h-full min-w-[52px] flex-shrink-0 items-center justify-center rounded-md bg-green px-2 py-1"
+                >
+                  Success
+                </button>
+                <button
+                  class="btn-delete flex h-full min-w-[52px] flex-shrink-0 items-center justify-center rounded-md bg-red px-2 py-1"
+                >
+                  Delete
+                </button>
+              </div>
+            </div> -->
+          </ul>
+        </div>
+      </div>
+    </div>
+    <script src="js/main.js"></script>
+  </body>
+</html>
