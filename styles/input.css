@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-black font-sans text-white;
+  }
+}
+
+@layer utilities {
+  .todo-input.error {
+    @apply border-red;
+  }
+  .todo-item.done {
+    @apply bg-[#77CA89];
+  }
+}
