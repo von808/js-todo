@@ -21,45 +21,79 @@ document.addEventListener('DOMContentLoaded', () => {
     },
   ];
 
+  function template(status, key, itemNumb, statusClass, title) {
+    return `
+      <div data-status="${status}" data-key="${key}"
+        class="todo-item todo-item--${itemNumb + 1} ${statusClass} flex min-h-[52px] w-full items-center justify-between gap-4 rounded-md bg-white px-2 py-2 pl-4"
+      >
+        <h3 class="text-2xl font-semibold">${title}</h3>
+        <div class="flex h-full gap-1 text-xl text-white">
+          <button
+            class="btn-success flex h-full min-w-[52px] flex-shrink-0 items-center justify-center rounded-md bg-green px-2 py-1"
+          >
+            Success
+          </button>
+          <button
+            class="btn-delete flex h-full min-w-[52px] flex-shrink-0 items-center justify-center rounded-md bg-red px-2 py-1"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  function saveToStorage(array) {
+    localStorage.setItem('todos', JSON.stringify(array));
+  }
+  function getToStorage() {
+    return JSON.parse(localStorage.getItem('todos'));
+  }
+
+  function changeKey(aruy) {
+    aruy.forEach((q, index) => {
+      Object.defineProperty(q, 'key', {
+        value: String(index),
+      });
+    });
+  }
+
   function renderTodo(array, container) {
     if (document.querySelector('.todo-item-wrapper')) {
       document
         .querySelectorAll('.todo-item-wrapper')
         .forEach((el) => el.remove());
-      // .forEach((el) => (el.style.display = 'none'));
     }
 
-    array.forEach(({ key, title, status }, index) => {
-      const li = document.createElement('li');
-      li.classList.add('w-full', 'todo-item-wrapper');
+    function whoArrayF(whoArray) {
+      whoArray.forEach(({ key, title, status }, index) => {
+        const li = document.createElement('li');
+        li.classList.add('w-full', 'todo-item-wrapper');
 
-      li.innerHTML = `
-        <div data-status="${status}" data-key="${index}"
-          class="todo-item todo-item--${index + 1} ${status} flex min-h-[52px] w-full items-center justify-between gap-4 rounded-md bg-white px-2 py-2 pl-4"
-        >
-          <h3 class="text-2xl font-semibold">${title}</h3>
-          <div class="flex h-full gap-1 text-xl text-white">
-            <button
-              class="btn-success flex h-full min-w-[52px] flex-shrink-0 items-center justify-center rounded-md bg-green px-2 py-1"
-            >
-              Success
-            </button>
-            <button
-              class="btn-delete flex h-full min-w-[52px] flex-shrink-0 items-center justify-center rounded-md bg-red px-2 py-1"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      `;
-      container.append(li);
-      // Меняем все значения key в массиве на соответствующий index объекта
-      todoArray.forEach((q, index) => {
-        Object.defineProperty(q, 'key', {
-          value: String(index),
-        });
+        li.innerHTML = template(status, index, index, status, title);
+
+        container.append(li);
+
+        // Прверяем есть ли массив в localStorage
+        if (localStorage.getItem('todos') !== null) {
+          let localStorageTodoArray = JSON.parse(localStorage.getItem('todos'));
+          // Меняем все значения key в массиве на соответствующий index объекта
+          changeKey(localStorageTodoArray);
+          // Сохраняем в localStorage
+          saveToStorage(localStorageTodoArray);
+        } else {
+          // Меняем все значения key в массиве на соответствующий index объекта
+          changeKey(whoArray);
+        }
       });
-    });
+    }
+
+    if (localStorage.getItem('todos') !== null) {
+      let localStorageTodoArray = JSON.parse(localStorage.getItem('todos'));
+      whoArrayF(localStorageTodoArray);
+    } else {
+      whoArrayF(array);
+    }
   }
   renderTodo(todoArray, container);
 
@@ -69,40 +103,61 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       let createTitle = el.value;
 
-      let createObject = {
-        key: String(todoArray.length),
-        title: createTitle,
-        status: 'no',
-      };
-
       const li = document.createElement('li');
       li.classList.add('w-full', 'todo-item-wrapper');
 
-      li.innerHTML = `
-        <div data-status="no" data-key="${todoArray.length}"
-          class="todo-item todo-item--${todoArray.length + 1} flex min-h-[52px] w-full items-center justify-between gap-4 rounded-md bg-white px-2 py-2 pl-4"
-        >
-          <h3 class="text-2xl font-semibold">${createTitle}</h3>
-          <div class="flex h-full gap-1 text-xl text-white">
-            <button
-              class="btn-success flex h-full min-w-[52px] flex-shrink-0 items-center justify-center rounded-md bg-green px-2 py-1"
-            >
-              Success
-            </button>
-            <button
-              class="btn-delete flex h-full min-w-[52px] flex-shrink-0 items-center justify-center rounded-md bg-red px-2 py-1"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      `;
-      container.append(li);
-      el.value = '';
+      // Прверяем есть ли массив в localStorage
+      if (localStorage.getItem('todos') !== null) {
+        let localStorageTodoArray = getToStorage();
 
-      todoArray.push(createObject);
+        let createObject = {
+          key: String(localStorageTodoArray.length),
+          title: createTitle,
+          status: 'no',
+        };
+        li.innerHTML = template(
+          'no',
+          localStorageTodoArray.length,
+          localStorageTodoArray.length,
+          '',
+          createTitle,
+        );
+        container.append(li);
+        el.value = '';
 
-      console.log(todoArray);
+        // Добавляем в localStorage массив
+        localStorageTodoArray.push(createObject);
+        // Сохраняем в localStorage
+        saveToStorage(localStorageTodoArray);
+        // Рендерим массив из localStorage
+        renderTodo(todoArray, container);
+        // Выводим массив из localStorage
+        console.log(localStorageTodoArray);
+      } else {
+        let createObject = {
+          key: String(todoArray.length),
+          title: createTitle,
+          status: 'no',
+        };
+        li.innerHTML = template(
+          'no',
+          todoArray.length,
+          todoArray.length,
+          '',
+          createTitle,
+        );
+        container.append(li);
+        el.value = '';
+
+        // Добавляем в js массив
+        todoArray.push(createObject);
+        // Сохраняем в js массиве
+        saveToStorage(todoArray);
+        // Рендерим массив из js
+        renderTodo(todoArray, container);
+        // Выводим массив из js
+        console.log(todoArray);
+      }
     }
   }
 
@@ -124,14 +179,27 @@ document.addEventListener('DOMContentLoaded', () => {
       item.setAttribute('data-status', 'done');
       // Узнаем ключ
       let itemKey = item.dataset.key;
-      // Находим в массиве по ключу и меняем status на DONE
-      Object.defineProperty(todoArray[itemKey], 'status', {
-        value: 'done',
-      });
+      // Прверяем есть ли массив в localStorage
+      if (localStorage.getItem('todos') !== null) {
+        let localStorageTodoArray = getToStorage();
+        // Находим в массиве по ключу и меняем status на DONE
+        Object.defineProperty(localStorageTodoArray[itemKey], 'status', {
+          value: 'done',
+        });
+        // Сохраняем в localStorage
+        saveToStorage(localStorageTodoArray);
+        // Выводим массив из localStorage
+        console.log(localStorageTodoArray);
+      } else {
+        // Находим в массиве по ключу и меняем status на DONE
+        Object.defineProperty(todoArray[itemKey], 'status', {
+          value: 'done',
+        });
+        // Сохраняем в js массиве
+        saveToStorage(todoArray);
+      }
       // Меняем задний фон на зеленый
       item.style.backgroundColor = '#77CA89';
-
-      console.log(todoArray);
     }
   }
   function deleteTodo(e) {
@@ -144,13 +212,33 @@ document.addEventListener('DOMContentLoaded', () => {
       let itemKey = item.dataset.key;
       //  Удалаем todo
       itemWrapper.remove();
-      // itemWrapper.style.display = 'none';
-      // Находим по ключу в массиве и удаляем
-      todoArray = todoArray.filter((item) => item.key !== itemKey);
-
-      renderTodo(todoArray, container);
-
-      console.log(todoArray);
+      // Прверяем есть ли массив в localStorage
+      if (localStorage.getItem('todos') !== null) {
+        let localStorageTodoArray = getToStorage();
+        // Находим по ключу в массиве и удаляем
+        localStorageTodoArray = localStorageTodoArray.filter(
+          (item) => item.key !== itemKey,
+        );
+        // Меняем все ключи в массиве на соответствующий index
+        changeKey(localStorageTodoArray);
+        // Сохраняем в localStorage
+        saveToStorage(localStorageTodoArray);
+        // Рендерим массив из localStorage
+        renderTodo(localStorageTodoArray, container);
+        // Выводим массив из localStorage
+        console.log(localStorageTodoArray);
+      } else {
+        // Находим по ключу в массиве и удаляем
+        todoArray = todoArray.filter((item) => item.key !== itemKey);
+        // Меняем все ключи в массиве на соответствующий index
+        changeKey(localStorageTodoArray);
+        // Сохраняем в js массиве
+        saveToStorage(todoArray);
+        // Рендерим массив из js
+        renderTodo(todoArray, container);
+        // Выводим массив из js
+        // console.log(todoArray);
+      }
     }
   }
   document.addEventListener('click', function (e) {
