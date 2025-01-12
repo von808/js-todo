@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Добавляем в js массив
         todoArray.push(createObject);
-        // Сохраняем в js массиве
+        // Сохраняем в localStorage
         saveToStorage(todoArray);
         // Рендерим массив из js
         renderTodo(todoArray, container);
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
         Object.defineProperty(todoArray[itemKey], 'status', {
           value: 'done',
         });
-        // Сохраняем в js массиве
+        // Сохраняем в localStorage
         saveToStorage(todoArray);
       }
       // Меняем задний фон на зеленый
@@ -231,8 +231,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Находим по ключу в массиве и удаляем
         todoArray = todoArray.filter((item) => item.key !== itemKey);
         // Меняем все ключи в массиве на соответствующий index
-        changeKey(localStorageTodoArray);
-        // Сохраняем в js массиве
+        changeKey(todoArray);
+        // Сохраняем в localStorage
         saveToStorage(todoArray);
         // Рендерим массив из js
         renderTodo(todoArray, container);
