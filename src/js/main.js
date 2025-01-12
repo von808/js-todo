@@ -226,7 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Рендерим массив из localStorage
         renderTodo(localStorageTodoArray, container);
         // Выводим массив из localStorage
-        console.log(localStorageTodoArray);
+        console.log(localStorageTodoArray); 
       } else {
         // Находим по ключу в массиве и удаляем
         todoArray = todoArray.filter((item) => item.key !== itemKey);
