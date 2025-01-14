@@ -1,251 +1,149 @@
 document.addEventListener('DOMContentLoaded', () => {
   const input = document.querySelector('.todo-input');
   const addBtn = document.querySelector('#add-btn');
+  const sortBtn = document.querySelector('#sort');
   const container = document.querySelector('#list');
+  const localStorageKey = 'newTodos';
 
-  let todoArray = [
-    {
-      key: '',
-      title: 'ПРОСЫПАТСА',
-      status: 'no',
-    },
-    {
-      key: '',
-      title: 'АНЖУМАНИЯ',
-      status: 'no',
-    },
-    {
-      key: '',
-      title: 'ПРЕСС КАЧАТ',
-      status: 'no',
-    },
-  ];
-
-  function template(status, key, itemNumb, statusClass, title) {
+  function template(noteText, completed, index) {
     return `
-      <div data-status="${status}" data-key="${key}"
-        class="todo-item todo-item--${itemNumb + 1} ${statusClass} flex min-h-[52px] w-full items-center justify-between gap-4 rounded-md bg-white px-2 py-2 pl-4"
+      <li"
+        class="todo-item ${completed === true ? 'bg-[#77CA89]' : 'bg-white'} flex min-h-[52px] w-full items-center justify-between gap-4 rounded-md  px-2 py-2 pl-4"
       >
-        <h3 class="text-2xl font-semibold">${title}</h3>
+        <h3 class="text-2xl font-semibold">${noteText}</h3>
         <div class="flex h-full gap-1 text-xl text-white">
           <button
-            class="btn-success flex h-full min-w-[52px] flex-shrink-0 items-center justify-center rounded-md bg-green px-2 py-1"
+            class="btn-success flex h-full min-w-[52px] flex-shrink-0 items-center justify-center rounded-md px-2 py-1 ${completed === true ? 'bg-yellow-500' : 'bg-green'}"
+            data-index="${index}"
+            data-type="toggle"
           >
             Success
           </button>
           <button
             class="btn-delete flex h-full min-w-[52px] flex-shrink-0 items-center justify-center rounded-md bg-red px-2 py-1"
+            data-index="${index}"
+            data-type="delete"
           >
             Delete
           </button>
         </div>
-      </div>
+      </li>
     `;
   }
 
   function saveToStorage(array) {
-    localStorage.setItem('todos', JSON.stringify(array));
+    localStorage.setItem(localStorageKey, JSON.stringify(array));
   }
+
   function getToStorage() {
-    return JSON.parse(localStorage.getItem('todos'));
+    return JSON.parse(localStorage.getItem(localStorageKey));
   }
 
-  function changeKey(aruy) {
-    aruy.forEach((q, index) => {
-      Object.defineProperty(q, 'key', {
-        value: String(index),
-      });
-    });
-  }
-
-  function renderTodo(array, container) {
-    if (document.querySelector('.todo-item-wrapper')) {
-      document
-        .querySelectorAll('.todo-item-wrapper')
-        .forEach((el) => el.remove());
-    }
-
-    function whoArrayF(whoArray) {
-      whoArray.forEach(({ key, title, status }, index) => {
-        const li = document.createElement('li');
-        li.classList.add('w-full', 'todo-item-wrapper');
-
-        li.innerHTML = template(status, index, index, status, title);
-
-        container.append(li);
-
-        // Прверяем есть ли массив в localStorage
-        if (localStorage.getItem('todos') !== null) {
-          let localStorageTodoArray = JSON.parse(localStorage.getItem('todos'));
-          // Меняем все значения key в массиве на соответствующий index объекта
-          changeKey(localStorageTodoArray);
-          // Сохраняем в localStorage
-          saveToStorage(localStorageTodoArray);
-        } else {
-          // Меняем все значения key в массиве на соответствующий index объекта
-          changeKey(whoArray);
-        }
-      });
-    }
-
-    if (localStorage.getItem('todos') !== null) {
-      let localStorageTodoArray = JSON.parse(localStorage.getItem('todos'));
-      whoArrayF(localStorageTodoArray);
+  function first() {
+    if (localStorage.getItem(localStorageKey) !== null) {
+      renderNotes();
     } else {
-      whoArrayF(array);
+      saveToStorage([]);
     }
   }
-  renderTodo(todoArray, container);
 
-  function createTodo(el) {
-    if (el.value === '') {
-      el.classList.add('error');
-    } else {
-      let createTitle = el.value;
+  first();
 
-      const li = document.createElement('li');
-      li.classList.add('w-full', 'todo-item-wrapper');
-
-      // Прверяем есть ли массив в localStorage
-      if (localStorage.getItem('todos') !== null) {
-        let localStorageTodoArray = getToStorage();
-
-        let createObject = {
-          key: String(localStorageTodoArray.length),
-          title: createTitle,
-          status: 'no',
-        };
-        li.innerHTML = template(
-          'no',
-          localStorageTodoArray.length,
-          localStorageTodoArray.length,
-          '',
-          createTitle,
+  function renderNotes() {
+    container.innerHTML = '';
+    if (getToStorage().length === 0) {
+      container.innerHTML =
+        '<span class="w-full text-center text-2xl text-white">Нет элементов</span>';
+      sortBtn.classList.add('hidden');
+    } else if (getToStorage().length > 0) {
+      let notes = getToStorage();
+      notes.forEach((notesEl, index) => {
+        container.insertAdjacentHTML(
+          'beforeend',
+          template(notesEl.noteText, notesEl.completed, index),
         );
-        container.append(li);
-        el.value = '';
-
-        // Добавляем в localStorage массив
-        localStorageTodoArray.push(createObject);
-        // Сохраняем в localStorage
-        saveToStorage(localStorageTodoArray);
-        // Рендерим массив из localStorage
-        renderTodo(todoArray, container);
-        // Выводим массив из localStorage
-        console.log(localStorageTodoArray);
+      });
+      if (notes.filter((item) => item.completed).length > 0) {
+        sortBtn.classList.remove('hidden');
       } else {
-        let createObject = {
-          key: String(todoArray.length),
-          title: createTitle,
-          status: 'no',
-        };
-        li.innerHTML = template(
-          'no',
-          todoArray.length,
-          todoArray.length,
-          '',
-          createTitle,
-        );
-        container.append(li);
-        el.value = '';
-
-        // Добавляем в js массив
-        todoArray.push(createObject);
-        // Сохраняем в localStorage
-        saveToStorage(todoArray);
-        // Рендерим массив из js
-        renderTodo(todoArray, container);
-        // Выводим массив из js
-        console.log(todoArray);
+        sortBtn.classList.add('hidden');
       }
+    }
+  }
+
+  function addNote() {
+    if (input.value === '') {
+      input.classList.add('error');
+    } else {
+      input.classList.remove('error');
+      let newNote = {
+        noteText: input.value,
+        completed: false,
+      };
+      let notes = getToStorage();
+      notes.push(newNote);
+      saveToStorage(notes);
+      input.value = '';
     }
   }
 
   addBtn.addEventListener('click', () => {
-    createTodo(input);
+    addNote();
+    renderNotes();
   });
+
   input.addEventListener('keyup', (e) => {
     if (e.key === 'Enter') {
-      createTodo(input);
+      addNote();
+      renderNotes();
     }
   });
 
-  function completeTodo(e) {
-    if (e.target.classList.contains('btn-success')) {
-      let item = e.target
-        .closest('.todo-item-wrapper')
-        .querySelector('.todo-item');
-      // Замена статуса с NO на DONE
-      item.setAttribute('data-status', 'done');
-      // Узнаем ключ
-      let itemKey = item.dataset.key;
-      // Прверяем есть ли массив в localStorage
-      if (localStorage.getItem('todos') !== null) {
-        let localStorageTodoArray = getToStorage();
-        // Находим в массиве по ключу и меняем status на DONE
-        Object.defineProperty(localStorageTodoArray[itemKey], 'status', {
-          value: 'done',
-        });
-        // Сохраняем в localStorage
-        saveToStorage(localStorageTodoArray);
-        // Выводим массив из localStorage
-        console.log(localStorageTodoArray);
-      } else {
-        // Находим в массиве по ключу и меняем status на DONE
-        Object.defineProperty(todoArray[itemKey], 'status', {
-          value: 'done',
-        });
-        // Сохраняем в localStorage
-        saveToStorage(todoArray);
-      }
-      // Меняем задний фон на зеленый
-      item.style.backgroundColor = '#77CA89';
-    }
-  }
-  function deleteTodo(e) {
-    if (e.target.classList.contains('btn-delete')) {
-      let itemWrapper = e.target.closest('.todo-item-wrapper');
-      let item = e.target
-        .closest('.todo-item-wrapper')
-        .querySelector('.todo-item');
-      // Узнаем ключ
-      let itemKey = item.dataset.key;
-      //  Удалаем todo
-      itemWrapper.remove();
-      // Прверяем есть ли массив в localStorage
-      if (localStorage.getItem('todos') !== null) {
-        let localStorageTodoArray = getToStorage();
-        // Находим по ключу в массиве и удаляем
-        localStorageTodoArray = localStorageTodoArray.filter(
-          (item) => item.key !== itemKey,
-        );
-        // Меняем все ключи в массиве на соответствующий index
-        changeKey(localStorageTodoArray);
-        // Сохраняем в localStorage
-        saveToStorage(localStorageTodoArray);
-        // Рендерим массив из localStorage
-        renderTodo(localStorageTodoArray, container);
-        // Выводим массив из localStorage
-        console.log(localStorageTodoArray);
-      } else {
-        // Находим по ключу в массиве и удаляем
-        todoArray = todoArray.filter((item) => item.key !== itemKey);
-        // Меняем все ключи в массиве на соответствующий index
-        changeKey(todoArray);
-        // Сохраняем в localStorage
-        saveToStorage(todoArray);
-        // Рендерим массив из js
-        renderTodo(todoArray, container);
-        // Выводим массив из js
-        // console.log(todoArray);
+  document.addEventListener('click', (e) => {
+    if (e.target.dataset.index) {
+      let notes = getToStorage();
+      let index = Number(e.target.dataset.index);
+      let type = e.target.dataset.type;
+      if (type === 'toggle') {
+        notes[index].completed = !notes[index].completed;
+        saveToStorage(notes);
+        renderNotes();
+      } else if (type === 'delete') {
+        notes.splice(index, 1);
+        saveToStorage(notes);
+        renderNotes();
       }
     }
-  }
-  document.addEventListener('click', function (e) {
-    completeTodo(e);
-    deleteTodo(e);
   });
 
-  // При изменении массива сохранять или перезаписывать в LocalStorage
-  // Сортировка по выполненным, сначала первым выполненные а при втором сперва не выполненные
+  sortBtn.addEventListener('click', () => {
+    let notes = getToStorage();
+    if (notes[0].completed === true) {
+      notes.sort(function (a, b) {
+        if (a.completed > b.completed) {
+          return 1;
+        }
+        if (a.completed < b.completed) {
+          return -1;
+        }
+        return 0;
+      });
+      saveToStorage(notes);
+      renderNotes();
+      localStorage.setItem('sort', false);
+    } else if (notes[0].completed === false) {
+      notes.sort(function (a, b) {
+        if (a.completed < b.completed) {
+          return 1;
+        }
+        if (a.completed > b.completed) {
+          return -1;
+        }
+        return 0;
+      });
+      saveToStorage(notes);
+      renderNotes();
+      localStorage.setItem('sort', true);
+    }
+  });
 });

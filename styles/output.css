@@ -571,8 +571,16 @@ body {
   margin-right: auto;
 }
 
+.ml-auto {
+  margin-left: auto;
+}
+
 .flex {
   display: flex;
+}
+
+.hidden {
+  display: none;
 }
 
 .h-14 {
@@ -601,6 +609,11 @@ body {
 
 .w-screen {
   width: 100vw;
+}
+
+.w-fit {
+  width: -moz-fit-content;
+  width: fit-content;
 }
 
 .min-w-\[52px\] {
@@ -681,6 +694,11 @@ body {
   background-color: rgb(35 36 40 / var(--tw-bg-opacity, 1));
 }
 
+.bg-\[\#77CA89\] {
+  --tw-bg-opacity: 1;
+  background-color: rgb(119 202 137 / var(--tw-bg-opacity, 1));
+}
+
 .bg-green {
   --tw-bg-opacity: 1;
   background-color: rgb(62 134 88 / var(--tw-bg-opacity, 1));
@@ -694,6 +712,21 @@ body {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity, 1));
+}
+
+.bg-yellow-300 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(253 224 71 / var(--tw-bg-opacity, 1));
+}
+
+.bg-yellow-200 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(254 240 138 / var(--tw-bg-opacity, 1));
+}
+
+.bg-yellow-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(234 179 8 / var(--tw-bg-opacity, 1));
 }
 
 .p-5 {
@@ -715,8 +748,22 @@ body {
   padding-bottom: 0.5rem;
 }
 
+.px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
 .pl-4 {
   padding-left: 1rem;
+}
+
+.text-center {
+  text-align: center;
 }
 
 .text-2xl {
@@ -736,6 +783,14 @@ body {
 
 .font-semibold {
   font-weight: 600;
+}
+
+.tracking-wide {
+  letter-spacing: 0.025em;
+}
+
+.tracking-widest {
+  letter-spacing: 0.1em;
 }
 
 .text-black {
@@ -760,11 +815,6 @@ body {
 .todo-input.error {
   --tw-border-opacity: 1;
   border-color: rgb(202 67 74 / var(--tw-border-opacity, 1));
-}
-
-.todo-item.done {
-  --tw-bg-opacity: 1;
-  background-color: rgb(119 202 137 / var(--tw-bg-opacity, 1));
 }
 
 .focus\:border-blue-500:focus {

@@ -12,7 +12,4 @@
   .todo-input.error {
     @apply border-red;
   }
-  .todo-item.done {
-    @apply bg-[#77CA89];
-  }
 }
