@@ -46,7 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
       saveToStorage([]);
     }
   }
-
   first();
 
   function renderNotes() {
@@ -70,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   }
+  renderNotes();
 
   function addNote() {
     if (input.value === '') {
